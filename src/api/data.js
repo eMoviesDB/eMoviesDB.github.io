@@ -4,6 +4,7 @@ const endpoints = {
     ALL_MOVIES: '/classes/Movies',
     MOVIE_BY_ID: (id) => `/classes/Movies/${id}`,
     CREATE_MOVIE: '/classes/Movies',
+    DELETE_MOVIE: (id) => `/classes/Movies/${id}`,
 };
 
 export async function getAllMovies() {
@@ -16,4 +17,8 @@ export async function getMovieById(id) {
 
 export async function createMovie(data) {
     return await post(endpoints.CREATE_MOVIE, data);
+}
+
+export async function deleteMovieById(id) {
+    return await del(endpoints.DELETE_MOVIE(id));
 }

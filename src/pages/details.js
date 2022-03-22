@@ -1,3 +1,4 @@
+import { deleteMovieById } from '../api/data.js';
 import { html, until } from '../lib.js';
 import { getUserData } from '../util.js';
 
@@ -39,7 +40,7 @@ const movieDetailsTemplate = (movie, onDelete, isOwner) => html`
 `;
 
 const detailsTemplate = (moviePromise) => html`
-    ${until(moviePromise, html`<p class="text-center">Loading &hellip;</p>`)}
+    ${until(moviePromise, html`<h2 class="text-center">Loading &hellip;</h2>`)}
 `;
 
 export function detailsPage(ctx) {
@@ -57,7 +58,8 @@ export function detailsPage(ctx) {
         );
 
         if (confirmed) {
-            // TODO:
+            await deleteMovieById(ctx.params.id);
+            ctx.page.redirect('/');
         }
     }
 }

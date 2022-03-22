@@ -53,7 +53,7 @@ const catalogTemplate = (moviesPromise, isAuthenticated) => html`
         <div class="mt-3">
             <div class="row d-flex d-wrap">
                 <div class="card-deck d-flex justify-content-center">
-                    ${until(moviesPromise, html`<span>Loading &hellip;</span>`)}
+                    ${until(moviesPromise, html`<h2>Loading &hellip;</h2>`)}
                 </div>
             </div>
         </div>
