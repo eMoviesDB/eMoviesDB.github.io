@@ -92,19 +92,17 @@ export function editPage(ctx) {
             const { id } = ctx.params;
             const user = getUserData().objectId;
 
-            const editedMovie = await editMovie(id, {
+            await editMovie(id, {
                 title,
                 description,
                 imageUrl,
                 ownerId: user,
             });
+
             event.target.reset();
             ctx.page.redirect('/details/' + id);
         } catch (error) {
-            update(
-                editFormTemplate({ title, description, imageUrl }),
-                error.error
-            );
+            update(editFormTemplate({ title, description, imageUrl }), error);
         }
     }
 }

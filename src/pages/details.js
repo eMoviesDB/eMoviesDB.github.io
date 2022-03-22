@@ -2,7 +2,12 @@ import { deleteMovieById } from '../api/data.js';
 import { html, until } from '../lib.js';
 import { getUserData } from '../util.js';
 
-const movieDetailsTemplate = (movie, onDelete, isOwner) => html`
+const movieDetailsTemplate = (
+    movie,
+    onDelete,
+    isOwner,
+    isAuthenticated
+) => html`
     <section id="movie-example">
         <div class="container">
             <div class="row bg-light text-dark">
@@ -31,7 +36,9 @@ const movieDetailsTemplate = (movie, onDelete, isOwner) => html`
                                   >Edit</a
                               >`
                         : null}
-                    <a class="btn btn-primary" href="#">Like</a>
+                    ${isAuthenticated
+                        ? html`<a class="btn btn-primary" href="#">Like</a>`
+                        : null}
                     <span class="enrolled-span">Liked 1</span>
                 </div>
             </div>
@@ -48,8 +55,10 @@ export function detailsPage(ctx) {
 
     async function loadMovie() {
         const movie = await ctx.moviePromise;
-        const isOwner = getUserData().objectId == movie.ownerId;
-        return movieDetailsTemplate(movie, onDelete, isOwner);
+        const user = getUserData();
+        const isAuthenticated = user && user.objectId != movie.ownerId;
+        const isOwner = user.objectId == movie.ownerId;
+        return movieDetailsTemplate(movie, onDelete, isOwner, isAuthenticated);
     }
 
     async function onDelete(event) {
