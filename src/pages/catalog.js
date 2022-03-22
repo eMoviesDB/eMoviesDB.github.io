@@ -21,7 +21,7 @@ const movieTemplate = (movie) => html`
     </div>
 `;
 
-const catalogTemplate = (moviesPromise, isAuthenticated) => html`
+const catalogTemplate = (moviesPromise, isAuthenticated, onSearch) => html`
     <section id="home-page">
         <div
             class="jumbotron jumbotron-fluid text-light"
@@ -33,7 +33,7 @@ const catalogTemplate = (moviesPromise, isAuthenticated) => html`
                 alt="Responsive image"
                 style="width: 150%; height: 200px"
             />
-            <h1 class="display-4">Movies</h1>
+            <h1 class="display-4">eMovies</h1>
             <p class="lead">
                 Unlimited movies, TV shows, and more. Watch anywhere. Cancel
                 anytime.
@@ -42,6 +42,21 @@ const catalogTemplate = (moviesPromise, isAuthenticated) => html`
     </section>
 
     <h1 class="text-center">Movies</h1>
+    <form
+        class="form-inline my-2 my-lg-0 justify-content-center"
+        @submit=${onSearch}
+    >
+        <input
+            class="form-control mr-sm-2"
+            type="search"
+            name="search"
+            placeholder="Search"
+            aria-label="Search"
+        />
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
+            Search
+        </button>
+    </form>
 
     ${isAuthenticated
         ? html`<section id="add-movie-button">
@@ -61,7 +76,11 @@ const catalogTemplate = (moviesPromise, isAuthenticated) => html`
 `;
 
 export function catalogPage(ctx) {
-    ctx.render(catalogTemplate(loadMovies(), getUserData()));
+    update(loadMovies());
+
+    function update(movies) {
+        ctx.render(catalogTemplate(movies, getUserData(), onSearch));
+    }
 
     async function loadMovies() {
         const movies = await getAllMovies();
@@ -70,6 +89,23 @@ export function catalogPage(ctx) {
             return movies.results.map(movieTemplate);
         } else {
             return html`<p>No Movies added yet.</p>`;
+        }
+    }
+
+    async function onSearch(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const search = formData.get('search').trim().toLocaleLowerCase();
+
+        const movies = await getAllMovies();
+        const results = movies.results.filter((m) =>
+            m.title.toLocaleLowerCase().includes(search)
+        );
+
+        if (results.length > 0) {
+            update(results.map(movieTemplate));
+        } else {
+            update(html`<h2>No search results!</h2>`);
         }
     }
 }

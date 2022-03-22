@@ -3,7 +3,7 @@ import { clearUserData, getUserData } from '../util.js';
 
 const navigationTemplate = (userData, onLogout) => html`
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand text-light" href="/">Movies</a>
+        <a class="navbar-brand text-light" href="/">eMovies</a>
         <ul class="navbar-nav ml-auto">
             ${userData
                 ? html`<li class="nav-item">
