@@ -5,6 +5,7 @@ const endpoints = {
     MOVIE_BY_ID: (id) => `/classes/Movies/${id}`,
     CREATE_MOVIE: '/classes/Movies',
     DELETE_MOVIE: (id) => `/classes/Movies/${id}`,
+    EDIT_MOVIE: (id) => `/classes/Movies/${id}`,
 };
 
 export async function getAllMovies() {
@@ -21,4 +22,8 @@ export async function createMovie(data) {
 
 export async function deleteMovieById(id) {
     return await del(endpoints.DELETE_MOVIE(id));
+}
+
+export async function editMovie(id, data) {
+    return await put(endpoints.EDIT_MOVIE(id), data);
 }

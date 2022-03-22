@@ -1,4 +1,6 @@
+import { editMovie } from '../api/data.js';
 import { html, until } from '../lib.js';
+import { getUserData } from '../util.js';
 
 const editFormTemplate = (movie, onSubmit) => html`
     <form
@@ -59,15 +61,14 @@ const editTemplate = (moviePromise, errorMsg) => html`
 `;
 
 export function editPage(ctx) {
-    update('error found');
+    update(loadMovie());
 
-    function update(errorMsg) {
-        ctx.render(editTemplate(loadMovie(), errorMsg));
+    function update(movie, errorMsg) {
+        ctx.render(editTemplate(movie, errorMsg));
     }
 
     async function loadMovie() {
         const movie = await ctx.moviePromise;
-        console.log(movie);
         return editFormTemplate(movie, onSubmit);
     }
 
@@ -78,5 +79,32 @@ export function editPage(ctx) {
         const title = formData.get('title').trim();
         const description = formData.get('description').trim();
         const imageUrl = formData.get('imageUrl').trim();
+
+        if (title == '' || description == '' || imageUrl == '') {
+            update(
+                editFormTemplate({ title, description, imageUrl }),
+                'All fields are required!'
+            );
+            return;
+        }
+
+        try {
+            const { id } = ctx.params;
+            const user = getUserData().objectId;
+
+            const editedMovie = await editMovie(id, {
+                title,
+                description,
+                imageUrl,
+                ownerId: user,
+            });
+            event.target.reset();
+            ctx.page.redirect('/details/' + id);
+        } catch (error) {
+            update(
+                editFormTemplate({ title, description, imageUrl }),
+                error.error
+            );
+        }
     }
 }
