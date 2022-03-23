@@ -1,3 +1,4 @@
+import { logout } from '../api/users.js';
 import { html } from '../lib.js';
 import { clearUserData, getUserData } from '../util.js';
 
@@ -30,7 +31,8 @@ const navigationTemplate = (userData, onLogout) => html`
 export function navigation(ctx) {
     return navigationTemplate(getUserData(), onLogout);
 
-    function onLogout() {
+    async function onLogout() {
+        await logout();
         clearUserData();
         ctx.page.redirect('/');
     }
