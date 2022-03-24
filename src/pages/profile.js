@@ -35,7 +35,7 @@ const profileTemplate = (movies, userData) => html`
                 <p>My movies count: ${movies.length}</p>
             </div>
         </article>
-        <h1 id="user-listings-title">User Memes</h1>
+        <h1 id="user-listings-title">User Movies</h1>
         <section id="movie">
             <div class="mt-3">
                 <div class="row d-flex d-wrap">
@@ -53,7 +53,7 @@ const profileTemplate = (movies, userData) => html`
 export async function profilePage(ctx) {
     let movies = await getAllMovies();
     const user = getUserData();
-    movies = movies.results.filter((m) => m.ownerId == user.objectId);
+    movies = movies.results.filter((m) => m.owner.objectId == user.objectId);
 
     ctx.render(profileTemplate(movies, user));
 }

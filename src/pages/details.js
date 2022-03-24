@@ -56,8 +56,8 @@ export function detailsPage(ctx) {
     async function loadMovie() {
         const movie = await ctx.moviePromise;
         const user = getUserData();
-        const isAuthenticated = user && user.objectId != movie.ownerId;
-        const isOwner = user.objectId == movie.ownerId;
+        const isAuthenticated = user && user.objectId != movie.owner.objectId;
+        const isOwner = user.objectId == movie.owner.objectId;
         return movieDetailsTemplate(movie, onDelete, isOwner, isAuthenticated);
     }
 
