@@ -100,7 +100,7 @@ export function editPage(ctx) {
         } catch (error) {
             update(
                 editFormTemplate({ title, description, imageUrl }, onSubmit),
-                error
+                error.message
             );
         }
     }
