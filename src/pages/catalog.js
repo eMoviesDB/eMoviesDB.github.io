@@ -96,12 +96,17 @@ export function catalogPage(ctx) {
         event.preventDefault();
         const formData = new FormData(event.target);
         const search = formData.get('search').trim();
-        const searchedMovies = await searchMovie(search);
 
-        if (searchedMovies.results.length > 0) {
-            update(searchedMovies.results.map(movieTemplate));
+        if (search != '') {
+            const searchedMovies = await searchMovie(search);
+
+            if (searchedMovies.results.length > 0) {
+                update(searchedMovies.results.map(movieTemplate));
+            } else {
+                update(html`<h2>No search results!</h2>`);
+            }
         } else {
-            update(html`<h2>No search results!</h2>`);
+            update(loadMovies());
         }
     }
 }
