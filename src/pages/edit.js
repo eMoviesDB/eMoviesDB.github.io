@@ -63,8 +63,8 @@ const editTemplate = (moviePromise, errorMsg) => html`
 export function editPage(ctx) {
     update(loadMovie());
 
-    function update(movie, errorMsg) {
-        ctx.render(editTemplate(movie, errorMsg));
+    function update(movie, errorMsg, onSubmit) {
+        ctx.render(editTemplate(movie, errorMsg, onSubmit));
     }
 
     async function loadMovie() {
@@ -102,7 +102,11 @@ export function editPage(ctx) {
             event.target.reset();
             ctx.page.redirect('/details/' + id);
         } catch (error) {
-            update(editFormTemplate({ title, description, imageUrl }), error);
+            update(
+                editFormTemplate({ title, description, imageUrl }),
+                error,
+                onSubmit
+            );
         }
     }
 }
