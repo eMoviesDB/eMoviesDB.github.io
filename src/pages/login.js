@@ -56,19 +56,18 @@ export function loginPage(ctx) {
         const username = formData.get('username').trim();
         const password = formData.get('password').trim();
 
-        if (username == '' || password == '') {
-            update('All fields are required!');
-            return;
-        }
-
         try {
+            if (username == '' || password == '') {
+                throw new Error('All fields are required!');
+            }
+
             const usernameToLowerCase = username.toLocaleLowerCase();
             const user = await login(usernameToLowerCase, password);
             setUserData(user);
             event.target.reset();
             ctx.page.redirect('/');
         } catch (error) {
-            update(error);
+            update(error.message);
         }
     }
 }

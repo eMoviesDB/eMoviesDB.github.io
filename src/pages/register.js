@@ -81,28 +81,26 @@ export function registerPage(ctx) {
         const password = formData.get('password').trim();
         const repeatPassword = formData.get('repeatPassword').trim();
 
-        if (
-            username == '' ||
-            email == '' ||
-            password == '' ||
-            repeatPassword == ''
-        ) {
-            update('All fields are required!');
-            return;
-        }
-
-        if (password !== repeatPassword) {
-            update("Password's does not match!");
-            return;
-        }
-
         try {
+            if (
+                username == '' ||
+                email == '' ||
+                password == '' ||
+                repeatPassword == ''
+            ) {
+                throw new Error('All fields are required!');
+            }
+
+            if (password !== repeatPassword) {
+                throw new Error("Password's does not match!");
+            }
+
             const usernameToLowerCase = username.toLocaleLowerCase();
             await register(email, usernameToLowerCase, password);
             event.target.reset();
             ctx.page.redirect('/login');
         } catch (error) {
-            update(error);
+            update(error.message);
         }
     }
 }
