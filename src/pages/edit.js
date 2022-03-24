@@ -80,15 +80,11 @@ export function editPage(ctx) {
         const description = formData.get('description').trim();
         const imageUrl = formData.get('imageUrl').trim();
 
-        if (title == '' || description == '' || imageUrl == '') {
-            update(
-                editFormTemplate({ title, description, imageUrl }),
-                'All fields are required!'
-            );
-            return;
-        }
-
         try {
+            if (title == '' || description == '' || imageUrl == '') {
+                throw new Error('All fields are required!');
+            }
+
             const { id } = ctx.params;
             const user = getUserData().objectId;
 
