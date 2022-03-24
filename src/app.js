@@ -7,6 +7,7 @@ import { createPage } from './pages/create.js';
 import { detailsPage } from './pages/details.js';
 import { loadMovie } from './middlewares/loadMovie.js';
 import { editPage } from './pages/edit.js';
+import { profilePage } from './pages/profile.js';
 
 page(decorateContext);
 page('/', catalogPage);
@@ -15,6 +16,7 @@ page('/register', registerPage);
 page('/create', createPage);
 page('/details/:id', loadMovie, detailsPage);
 page('/edit/:id', loadMovie, editPage);
+page('/profile', profilePage);
 
 page.redirect('/index.html', '/');
 

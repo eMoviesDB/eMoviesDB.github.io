@@ -11,6 +11,9 @@ const navigationTemplate = (userData, onLogout) => html`
                           <a class="nav-link">Welcome, ${userData.username}</a>
                       </li>
                       <li class="nav-item">
+                          <a href="/profile" class="nav-link">My Profile</a>
+                      </li>
+                      <li class="nav-item">
                           <a
                               class="nav-link"
                               href="javascript:void(0)"
