@@ -6,7 +6,19 @@ const endpoints = {
     CREATE_MOVIE: '/classes/Movies',
     DELETE_MOVIE: (id) => `/classes/Movies/${id}`,
     EDIT_MOVIE: (id) => `/classes/Movies/${id}`,
+    SEARCH: (searchedProp) =>
+        `/classes/Movies?where=${searchQuery('title', searchedProp)}`,
+    MY_PROFILE: (userId) =>
+        `/classes/Movies?where=${searchQuery('ownerId', userId)}`,
 };
+
+export async function getMyMovies(userId) {
+    return await get(endpoints.MY_PROFILE(userId));
+}
+
+export async function searchMovie(query) {
+    return await get(endpoints.SEARCH(query));
+}
 
 export async function getAllMovies() {
     return await get(endpoints.ALL_MOVIES);
@@ -26,4 +38,12 @@ export async function deleteMovieById(id) {
 
 export async function editMovie(id, data) {
     return await put(endpoints.EDIT_MOVIE(id), data);
+}
+
+function searchQuery(propName, searchedValue) {
+    return createQuery({ [propName]: searchedValue });
+}
+
+export function createQuery(query) {
+    return encodeURIComponent(JSON.stringify(query));
 }

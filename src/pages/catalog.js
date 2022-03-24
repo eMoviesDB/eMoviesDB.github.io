@@ -1,4 +1,4 @@
-import { getAllMovies } from '../api/data.js';
+import { getAllMovies, searchMovie } from '../api/data.js';
 import { html, until } from '../lib.js';
 import { getUserData } from '../util.js';
 
@@ -95,15 +95,11 @@ export function catalogPage(ctx) {
     async function onSearch(event) {
         event.preventDefault();
         const formData = new FormData(event.target);
-        const search = formData.get('search').trim().toLocaleLowerCase();
+        const search = formData.get('search').trim();
+        const searchedMovies = await searchMovie(search);
 
-        const movies = await getAllMovies();
-        const results = movies.results.filter((m) =>
-            m.title.toLocaleLowerCase().includes(search)
-        );
-
-        if (results.length > 0) {
-            update(results.map(movieTemplate));
+        if (searchedMovies.results.length > 0) {
+            update(searchedMovies.results.map(movieTemplate));
         } else {
             update(html`<h2>No search results!</h2>`);
         }

@@ -1,4 +1,4 @@
-import { getAllMovies } from '../api/data.js';
+import { getMyMovies } from '../api/data.js';
 import { html } from '../lib.js';
 import { getUserData } from '../util.js';
 
@@ -51,9 +51,8 @@ const profileTemplate = (movies, userData) => html`
 `;
 
 export async function profilePage(ctx) {
-    let movies = await getAllMovies();
     const user = getUserData();
-    movies = movies.results.filter((m) => m.owner.objectId == user.objectId);
+    let movies = await getMyMovies(user.objectId);
 
-    ctx.render(profileTemplate(movies, user));
+    ctx.render(profileTemplate(movies.results, user));
 }
