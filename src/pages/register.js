@@ -60,6 +60,33 @@ const registerTemplate = (onSubmit, errorMsg) => html`
                 />
             </div>
 
+            <div class="form-group">Please select gender:</div>
+            <div class="form-check">
+                <input
+                    class="form-check-input"
+                    type="radio"
+                    name="gender"
+                    id="flexRadioDefault1"
+                    value="male"
+                    checked
+                />
+                <label class="form-check-label" for="flexRadioDefault1">
+                    Male
+                </label>
+            </div>
+            <div class="form-check mb-4">
+                <input
+                    class="form-check-input"
+                    type="radio"
+                    name="gender"
+                    id="flexRadioDefault2"
+                    value="female"
+                />
+                <label class="form-check-label" for="flexRadioDefault2">
+                    Female
+                </label>
+            </div>
+
             <button type="submit" class="btn btn-primary">Register</button>
         </form>
     </section>
@@ -80,6 +107,7 @@ export function registerPage(ctx) {
         const email = formData.get('email').trim();
         const password = formData.get('password').trim();
         const repeatPassword = formData.get('repeatPassword').trim();
+        const gender = formData.get('gender');
 
         try {
             if (
@@ -96,7 +124,7 @@ export function registerPage(ctx) {
             }
 
             const usernameToLowerCase = username.toLocaleLowerCase();
-            await register(email, usernameToLowerCase, password);
+            await register(email, usernameToLowerCase, password, gender);
             event.target.reset();
             ctx.page.redirect('/login');
         } catch (error) {

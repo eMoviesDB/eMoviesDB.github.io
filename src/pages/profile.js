@@ -27,7 +27,7 @@ const profileTemplate = (movies, userData) => html`
             <img
                 id="user-avatar-url"
                 alt="user-profile"
-                src="/images/male.png"
+                src="/images/${userData.gender}.png"
             />
             <div class="user-content">
                 <p>Username: ${userData.username}</p>
