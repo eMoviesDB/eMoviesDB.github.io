@@ -68,8 +68,8 @@ export function detailsPage(ctx) {
 
         movie.likes = likes.results.length;
         const user = getUserData();
-        const isAuthenticated = user && user.objectId != movie.owner.objectId;
-        const isOwner = user.objectId == movie.owner.objectId;
+        const isAuthenticated = user && user.objectId != movie.ownerId;
+        const isOwner = user.objectId == movie.ownerId;
         return movieDetailsTemplate(
             movie,
             onDelete.bind(null, movie.title),
