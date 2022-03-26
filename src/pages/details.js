@@ -8,7 +8,8 @@ const movieDetailsTemplate = (
     onDelete,
     isOwner,
     isAuthenticated,
-    onLike
+    onLike,
+    isLiked
 ) => html`
     <section id="movie-example">
         <div class="container">
@@ -39,12 +40,13 @@ const movieDetailsTemplate = (
                               >`
                         : null}
                     ${isAuthenticated
-                        ? html`<a
+                        ? html`<button
+                              ?disabled=${isLiked}
                               class="btn btn-primary"
-                              href="javascript:void(0)"
                               @click=${onLike}
-                              >Like</a
-                          >`
+                          >
+                              Like
+                          </button>`
                         : null}
                     <span class="enrolled-span">Liked ${movie.likes}</span>
                 </div>
@@ -70,12 +72,15 @@ export function detailsPage(ctx) {
         const user = getUserData();
         const isAuthenticated = user && user.objectId != movie.ownerId;
         const isOwner = user.objectId == movie.ownerId;
+        const isLiked = likes.results.some((l) => l.userId == user.objectId);
+
         return movieDetailsTemplate(
             movie,
             onDelete.bind(null, movie.title),
             isOwner,
             isAuthenticated,
-            onLike
+            onLike,
+            isLiked
         );
     }
 
