@@ -40,7 +40,7 @@ export async function editMovie(id, data) {
     return await put(endpoints.EDIT_MOVIE(id), data);
 }
 
-function searchQuery(propName, searchedValue) {
+export function searchQuery(propName, searchedValue) {
     return createQuery({ [propName]: searchedValue });
 }
 

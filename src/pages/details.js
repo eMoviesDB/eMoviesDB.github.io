@@ -1,4 +1,5 @@
 import { deleteMovieById } from '../api/data.js';
+import { createLike, getMovieLikes } from '../api/likes.js';
 import { html, until } from '../lib.js';
 import { getUserData } from '../util.js';
 
@@ -6,7 +7,8 @@ const movieDetailsTemplate = (
     movie,
     onDelete,
     isOwner,
-    isAuthenticated
+    isAuthenticated,
+    onLike
 ) => html`
     <section id="movie-example">
         <div class="container">
@@ -37,9 +39,14 @@ const movieDetailsTemplate = (
                               >`
                         : null}
                     ${isAuthenticated
-                        ? html`<a class="btn btn-primary" href="#">Like</a>`
+                        ? html`<a
+                              class="btn btn-primary"
+                              href="javascript:void(0)"
+                              @click=${onLike}
+                              >Like</a
+                          >`
                         : null}
-                    <span class="enrolled-span">Liked 1</span>
+                    <span class="enrolled-span">Liked ${movie.likes}</span>
                 </div>
             </div>
         </div>
@@ -54,17 +61,31 @@ export function detailsPage(ctx) {
     ctx.render(detailsTemplate(loadMovie()));
 
     async function loadMovie() {
-        const movie = await ctx.moviePromise;
+        const [movie, likes] = await Promise.all([
+            ctx.moviePromise,
+            getMovieLikes(ctx.params.id),
+        ]);
+
+        movie.likes = likes.results.length;
         const user = getUserData();
         const isAuthenticated = user && user.objectId != movie.owner.objectId;
         const isOwner = user.objectId == movie.owner.objectId;
-        return movieDetailsTemplate(movie, onDelete, isOwner, isAuthenticated);
+        return movieDetailsTemplate(
+            movie,
+            onDelete.bind(null, movie.title),
+            isOwner,
+            isAuthenticated,
+            onLike
+        );
     }
 
-    async function onDelete(event) {
-        const confirmed = confirm(
-            'Are you sure you want to delete this movie?'
-        );
+    async function onLike(event) {
+        await createLike(getUserData().objectId, ctx.params.id);
+        ctx.page.redirect('/details/' + ctx.params.id);
+    }
+
+    async function onDelete(title) {
+        const confirmed = confirm(`Are you sure you want to delete ${title}?`);
 
         if (confirmed) {
             await deleteMovieById(ctx.params.id);
