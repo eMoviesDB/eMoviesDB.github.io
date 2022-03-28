@@ -9,6 +9,13 @@ import { loadMovie } from './middlewares/loadMovie.js';
 import { editPage } from './pages/edit.js';
 import { profilePage } from './pages/profile.js';
 
+let path = localStorage.getItem('path');
+if (path) {
+    localStorage.removeItem('path');
+
+    page.redirect(path);
+}
+
 page(decorateContext);
 page('/', catalogPage);
 page('/login', loginPage);
