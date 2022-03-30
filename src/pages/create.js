@@ -1,5 +1,5 @@
 import { createMovie } from '../api/data.js';
-import { html } from '../lib.js';
+import { html, nothing } from '../lib.js';
 import { getUserData } from '../util.js';
 
 const createTemplate = (onSubmit, errorMsg) => html`
@@ -8,7 +8,7 @@ const createTemplate = (onSubmit, errorMsg) => html`
             ? html`<div id="error-container" class="text-center">
                   <span>${errorMsg}</span>
               </div>`
-            : null}
+            : nothing}
         <form
             class="text-center border border-light p-5"
             action="#"

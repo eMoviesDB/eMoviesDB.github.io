@@ -10,6 +10,7 @@ const endpoints = {
         `/classes/Movies?where=${searchQuery('title', searchedProp)}`,
     MY_PROFILE: (userId) =>
         `/classes/Movies?where=${searchQuery('ownerId', userId)}`,
+    DELETE_LIKE: `/classes/Likes/`,
 };
 
 export async function getMyMovies(userId) {
@@ -38,6 +39,10 @@ export async function deleteMovieById(id) {
 
 export async function editMovie(id, data) {
     return await put(endpoints.EDIT_MOVIE(id), data);
+}
+
+export async function deleteLike(likeId) {
+    return del(endpoints.DELETE_LIKE + likeId);
 }
 
 export function searchQuery(propName, searchedValue) {

@@ -1,6 +1,6 @@
-import { deleteMovieById } from '../api/data.js';
+import { deleteLike, deleteMovieById } from '../api/data.js';
 import { createLike, getMovieLikes } from '../api/likes.js';
-import { html, until } from '../lib.js';
+import { html, until, nothing } from '../lib.js';
 import { getUserData } from '../util.js';
 
 const movieDetailsTemplate = (
@@ -9,7 +9,8 @@ const movieDetailsTemplate = (
     isOwner,
     isAuthenticated,
     onLike,
-    isLiked
+    isLiked,
+    onUnlike
 ) => html`
     <section id="movie-example">
         <div class="container">
@@ -39,15 +40,19 @@ const movieDetailsTemplate = (
                                   >Edit</a
                               >`
                         : null}
-                    ${isAuthenticated
-                        ? html`<button
-                              ?disabled=${isLiked}
-                              class="btn btn-primary"
-                              @click=${onLike}
-                          >
+                    ${isAuthenticated && !isLiked
+                        ? html`<button class="btn btn-primary" @click=${onLike}>
                               Like
                           </button>`
-                        : null}
+                        : nothing}
+                    ${isAuthenticated && isLiked
+                        ? html`<button
+                              class="btn btn-primary"
+                              @click=${onUnlike}
+                          >
+                              Unlike
+                          </button>`
+                        : nothing}
                     <span class="enrolled-span">Liked ${movie.likes}</span>
                 </div>
             </div>
@@ -68,7 +73,7 @@ export function detailsPage(ctx) {
             getMovieLikes(ctx.params.id),
         ]);
 
-        movie.likes = likes.results.length;
+        movie.likes = likes.results.length || 0;
         const user = getUserData();
         const isAuthenticated = user && user.objectId != movie.ownerId;
         const isOwner = user.objectId == movie.ownerId;
@@ -80,8 +85,19 @@ export function detailsPage(ctx) {
             isOwner,
             isAuthenticated,
             onLike,
-            isLiked
+            isLiked,
+            onUnlike.bind(null, likes)
         );
+    }
+
+    async function onUnlike(likes) {
+        const user = getUserData();
+        const likeObject = likes.results.find(
+            (like) => like.userId == user.objectId
+        );
+
+        const result = await deleteLike(likeObject.objectId);
+        ctx.render(detailsTemplate(loadMovie()));
     }
 
     async function onLike(event) {

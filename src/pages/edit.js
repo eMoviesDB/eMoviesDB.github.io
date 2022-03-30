@@ -1,5 +1,5 @@
 import { editMovie } from '../api/data.js';
-import { html, until } from '../lib.js';
+import { html, until, nothing } from '../lib.js';
 import { getUserData } from '../util.js';
 
 const editFormTemplate = (movie, onSubmit) => html`
@@ -52,7 +52,7 @@ const editTemplate = (moviePromise, errorMsg) => html`
             ? html`<div id="error-container" class="text-center">
                   <span>${errorMsg}</span>
               </div>`
-            : null}
+            : nothing}
         ${until(
             moviePromise,
             html`<h2 class="text-center">Loading &hellip;</h2>`

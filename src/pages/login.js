@@ -1,5 +1,5 @@
 import { login } from '../api/users.js';
-import { html } from '../lib.js';
+import { html, nothing } from '../lib.js';
 import { setUserData } from '../util.js';
 
 const loginTemplate = (onSubmit, errorMsg) => html`
@@ -8,7 +8,7 @@ const loginTemplate = (onSubmit, errorMsg) => html`
             ? html`<div id="error-container" class="text-center">
                   <span>${errorMsg}</span>
               </div>`
-            : null}
+            : nothing}
         <form
             class="text-center border border-light p-5"
             action=""

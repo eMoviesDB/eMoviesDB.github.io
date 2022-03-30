@@ -1,5 +1,5 @@
 import { getAllMovies, searchMovie } from '../api/data.js';
-import { html, until } from '../lib.js';
+import { html, until, nothing } from '../lib.js';
 import { getUserData } from '../util.js';
 
 const movieTemplate = (movie) => html`
@@ -62,7 +62,7 @@ const catalogTemplate = (moviesPromise, isAuthenticated, onSearch) => html`
         ? html`<section id="add-movie-button">
               <a href="/create" class="btn btn-warning">Add Movie</a>
           </section>`
-        : null}
+        : nothing}
 
     <section id="movie">
         <div class="mt-3">
