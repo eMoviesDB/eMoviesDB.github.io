@@ -102,7 +102,7 @@ export function detailsPage(ctx) {
 
     async function onLike(event) {
         await createLike(getUserData().objectId, ctx.params.id);
-        ctx.page.redirect('/details/' + ctx.params.id);
+        ctx.render(detailsTemplate(loadMovie()));
     }
 
     async function onDelete(title) {
