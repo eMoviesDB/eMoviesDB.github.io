@@ -60,19 +60,21 @@ const movieDetailsTemplate = (
     </section>
 `;
 
-const detailsTemplate = (moviePromise) => html`
-    ${until(moviePromise, html`<h2 class="text-center">Loading &hellip;</h2>`)}
-`;
-
 export function detailsPage(ctx) {
-    ctx.render(detailsTemplate(loadMovie()));
+    const movieId = ctx.params.id;
 
-    async function loadMovie() {
+    update();
+
+    async function update() {
         const [movie, likes] = await Promise.all([
             ctx.moviePromise,
-            getMovieLikes(ctx.params.id),
+            getMovieLikes(movieId),
         ]);
 
+        ctx.render(loadMovie(movie, likes));
+    }
+
+    function loadMovie(movie, likes) {
         movie.likes = likes.results.length || 0;
         const user = getUserData();
         const isAuthenticated = user && user.objectId != movie.ownerId;
@@ -97,12 +99,12 @@ export function detailsPage(ctx) {
         );
 
         const result = await deleteLike(likeObject.objectId);
-        ctx.render(detailsTemplate(loadMovie()));
+        update();
     }
 
     async function onLike(event) {
         await createLike(getUserData().objectId, ctx.params.id);
-        ctx.render(detailsTemplate(loadMovie()));
+        update();
     }
 
     async function onDelete(title) {
