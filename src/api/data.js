@@ -11,6 +11,7 @@ const endpoints = {
     MY_PROFILE: (userId) =>
         `/classes/Movies?where=${searchQuery('ownerId', userId)}`,
     DELETE_LIKE: `/classes/Likes/`,
+    GET_MOVIES: (limit, skip) => `/classes/Movies?limit=${limit}&skip=${skip}`,
 };
 
 export async function getMyMovies(userId) {
@@ -51,4 +52,8 @@ export function searchQuery(propName, searchedValue) {
 
 export function createQuery(query) {
     return encodeURIComponent(JSON.stringify(query));
+}
+
+export async function getMovies(limit, skip) {
+    return get(endpoints.GET_MOVIES(limit, skip));
 }

@@ -1,4 +1,4 @@
-import { getAllMovies, searchMovie } from '../api/data.js';
+import { getAllMovies, getMovies, searchMovie } from '../api/data.js';
 import { html, until, nothing } from '../lib.js';
 import { getUserData } from '../util.js';
 
@@ -71,19 +71,55 @@ const catalogTemplate = (moviesPromise, isAuthenticated, onSearch) => html`
                     ${until(moviesPromise, html`<h2>Loading &hellip;</h2>`)}
                 </div>
             </div>
+            <nav
+                aria-label="Page navigation example"
+                class="navbar-nav mx-auto"
+            >
+                <ul class="pagination" style="justify-content: center;">
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="/?limit=4&skip=0">1</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="/?limit=4&skip=4">2</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="/?limit=4&skip=8">3</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </section>
 `;
 
 export function catalogPage(ctx) {
-    update(loadMovies());
+    const params = new URLSearchParams(ctx.querystring);
+    const limitParam = params.get('limit');
+    const skipParam = params.get('skip');
+
+    if (limitParam && skipParam) {
+        update(loadMovies(limitParam, skipParam));
+    } else {
+        update(loadMovies());
+    }
 
     function update(movies) {
         ctx.render(catalogTemplate(movies, getUserData(), onSearch));
     }
 
-    async function loadMovies() {
-        const movies = await getAllMovies();
+    async function loadMovies(limit = 5, skip = 0) {
+        const movies = await getMovies(limit, skip);
 
         if (movies.results.length > 0) {
             return movies.results.map(movieTemplate);
