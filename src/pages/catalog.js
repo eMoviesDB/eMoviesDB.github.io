@@ -21,7 +21,13 @@ const movieTemplate = (movie) => html`
     </div>
 `;
 
-const catalogTemplate = (moviesPromise, isAuthenticated, onSearch) => html`
+const catalogTemplate = (
+    moviesPromise,
+    isAuthenticated,
+    onSearch,
+    onNextPage,
+    onPrevious
+) => html`
     <section id="home-page">
         <div
             class="jumbotron jumbotron-fluid text-light"
@@ -77,23 +83,24 @@ const catalogTemplate = (moviesPromise, isAuthenticated, onSearch) => html`
             >
                 <ul class="pagination" style="justify-content: center;">
                     <li class="page-item">
-                        <a class="page-link" href="#" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
+                        <a
+                            class="page-link"
+                            href="/?page=0"
+                            aria-label="Previous"
+                            @click=${onPrevious}
+                        >
+                            <span aria-hidden="true">Previous</span>
                             <span class="sr-only">Previous</span>
                         </a>
                     </li>
                     <li class="page-item">
-                        <a class="page-link" href="/?limit=4&skip=0">1</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="/?limit=4&skip=4">2</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="/?limit=4&skip=8">3</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="#" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
+                        <a
+                            class="page-link"
+                            href="/?page=2"
+                            aria-label="Next"
+                            @click=${onNextPage}
+                        >
+                            <span aria-hidden="true">Next</span>
                             <span class="sr-only">Next</span>
                         </a>
                     </li>
@@ -105,21 +112,42 @@ const catalogTemplate = (moviesPromise, isAuthenticated, onSearch) => html`
 
 export function catalogPage(ctx) {
     const params = new URLSearchParams(ctx.querystring);
-    const limitParam = params.get('limit');
-    const skipParam = params.get('skip');
+    const page = Math.max(params.get('page'), 0);
 
-    if (limitParam && skipParam) {
-        update(loadMovies(limitParam, skipParam));
+    if (page) {
+        update(loadMovies(page));
     } else {
         update(loadMovies());
     }
 
     function update(movies) {
-        ctx.render(catalogTemplate(movies, getUserData(), onSearch));
+        ctx.render(
+            catalogTemplate(
+                movies,
+                getUserData(),
+                onSearch,
+                onNextPage,
+                onPrevious
+            )
+        );
     }
 
-    async function loadMovies(limit = 5, skip = 0) {
-        const movies = await getMovies(limit, skip);
+    function onNextPage(event) {
+        event.preventDefault();
+        const params = new URLSearchParams(ctx.querystring);
+        const page = params.get('page');
+        update(loadMovies(page + 4));
+    }
+
+    function onPrevious(event) {
+        event.preventDefault();
+        const params = new URLSearchParams(ctx.querystring);
+        const page = Math.max(params.get('page') - 4, 0);
+        update(loadMovies(page));
+    }
+
+    async function loadMovies(skip = 0) {
+        const movies = await getMovies(skip);
 
         if (movies.results.length > 0) {
             return movies.results.map(movieTemplate);
