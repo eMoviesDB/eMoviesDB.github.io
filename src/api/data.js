@@ -65,6 +65,6 @@ export function createQuery(query) {
     return encodeURIComponent(JSON.stringify(query));
 }
 
-export async function getMovies(skip) {
-    return get(endpoints.GET_MOVIES(skip));
+export async function getMovies(skip = 1) {
+    return get(endpoints.GET_MOVIES((skip - 1) * 4));
 }

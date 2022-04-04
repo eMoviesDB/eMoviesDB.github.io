@@ -25,6 +25,7 @@ const catalogTemplate = (
     moviesPromise,
     isAuthenticated,
     onSearch,
+    page,
     onNextPage,
     onPrevious
 ) => html`
@@ -87,7 +88,7 @@ const catalogTemplate = (
                             class="page-link"
                             href="/?page=0"
                             aria-label="Previous"
-                            @click=${onPrevious}
+                            @click=${(e) => onPrevious(e, page - 1)}
                         >
                             <span aria-hidden="true">Previous</span>
                             <span class="sr-only">Previous</span>
@@ -98,7 +99,7 @@ const catalogTemplate = (
                             class="page-link"
                             href="/?page=2"
                             aria-label="Next"
-                            @click=${onNextPage}
+                            @click=${(e) => onNextPage(e, page + 1)}
                         >
                             <span aria-hidden="true">Next</span>
                             <span class="sr-only">Next</span>
@@ -111,42 +112,33 @@ const catalogTemplate = (
 `;
 
 export function catalogPage(ctx) {
-    const params = new URLSearchParams(ctx.querystring);
-    const page = Math.max(params.get('page'), 0);
+    update(loadMovies());
 
-    if (page) {
-        update(loadMovies(page));
-    } else {
-        update(loadMovies());
-    }
-
-    function update(movies) {
+    function update(movies, page = 1) {
         ctx.render(
             catalogTemplate(
                 movies,
                 getUserData(),
                 onSearch,
+                page,
                 onNextPage,
                 onPrevious
             )
         );
     }
 
-    function onNextPage(event) {
+    function onNextPage(event, page) {
         event.preventDefault();
-        const params = new URLSearchParams(ctx.querystring);
-        const page = params.get('page');
-        update(loadMovies(page + 4));
+        update(loadMovies(page), page);
     }
 
-    function onPrevious(event) {
+    function onPrevious(event, page) {
         event.preventDefault();
-        const params = new URLSearchParams(ctx.querystring);
-        const page = Math.max(params.get('page') - 4, 0);
-        update(loadMovies(page));
+        page = Math.max(page, 1);
+        update(loadMovies(page), page);
     }
 
-    async function loadMovies(skip = 0) {
+    async function loadMovies(skip = 1) {
         const movies = await getMovies(skip);
 
         if (movies.results.length > 0) {
