@@ -1,4 +1,4 @@
-import { getAllMovies, searchMovie } from '../api/data.js';
+import { getAllMovies, getMovies, searchMovie } from '../api/data.js';
 import { html, until, nothing } from '../lib.js';
 import { getUserData } from '../util.js';
 
@@ -21,7 +21,14 @@ const movieTemplate = (movie) => html`
     </div>
 `;
 
-const catalogTemplate = (moviesPromise, isAuthenticated, onSearch) => html`
+const catalogTemplate = (
+    moviesPromise,
+    isAuthenticated,
+    onSearch,
+    page,
+    onNextPage,
+    onPrevious
+) => html`
     <section id="home-page">
         <div
             class="jumbotron jumbotron-fluid text-light"
@@ -71,6 +78,35 @@ const catalogTemplate = (moviesPromise, isAuthenticated, onSearch) => html`
                     ${until(moviesPromise, html`<h2>Loading &hellip;</h2>`)}
                 </div>
             </div>
+            <nav
+                aria-label="Page navigation example"
+                class="navbar-nav mx-auto"
+            >
+                <ul class="pagination" style="justify-content: center;">
+                    <li class="page-item">
+                        <a
+                            class="page-link"
+                            href="/?page=0"
+                            aria-label="Previous"
+                            @click=${(e) => onPrevious(e, page - 1)}
+                        >
+                            <span aria-hidden="true">Previous</span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a
+                            class="page-link"
+                            href="/?page=2"
+                            aria-label="Next"
+                            @click=${(e) => onNextPage(e, page + 1)}
+                        >
+                            <span aria-hidden="true">Next</span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </section>
 `;
@@ -78,12 +114,32 @@ const catalogTemplate = (moviesPromise, isAuthenticated, onSearch) => html`
 export function catalogPage(ctx) {
     update(loadMovies());
 
-    function update(movies) {
-        ctx.render(catalogTemplate(movies, getUserData(), onSearch));
+    function update(movies, page = 1) {
+        ctx.render(
+            catalogTemplate(
+                movies,
+                getUserData(),
+                onSearch,
+                page,
+                onNextPage,
+                onPrevious
+            )
+        );
     }
 
-    async function loadMovies() {
-        const movies = await getAllMovies();
+    function onNextPage(event, page) {
+        event.preventDefault();
+        update(loadMovies(page), page);
+    }
+
+    function onPrevious(event, page) {
+        event.preventDefault();
+        page = Math.max(page, 1);
+        update(loadMovies(page), page);
+    }
+
+    async function loadMovies(skip = 1) {
+        const movies = await getMovies(skip);
 
         if (movies.results.length > 0) {
             return movies.results.map(movieTemplate);

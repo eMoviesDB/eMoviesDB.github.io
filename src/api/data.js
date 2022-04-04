@@ -6,11 +6,11 @@ const endpoints = {
     CREATE_MOVIE: '/classes/Movies',
     DELETE_MOVIE: (id) => `/classes/Movies/${id}`,
     EDIT_MOVIE: (id) => `/classes/Movies/${id}`,
-    SEARCH: (searchedProp) =>
-        `/classes/Movies?where=${searchQuery('title', searchedProp)}`,
+    SEARCH: (searchedProp) => `/classes/Movies?where=${search(searchedProp)}`,
     MY_PROFILE: (userId) =>
         `/classes/Movies?where=${searchQuery('ownerId', userId)}`,
     DELETE_LIKE: `/classes/Likes/`,
+    GET_MOVIES: (skip) => `/classes/Movies?limit=4&skip=${skip}`,
 };
 
 export async function getMyMovies(userId) {
@@ -45,10 +45,26 @@ export async function deleteLike(likeId) {
     return del(endpoints.DELETE_LIKE + likeId);
 }
 
+function search(searchedValue) {
+    return JSON.stringify({
+        title: {
+            $text: {
+                $search: {
+                    $term: `${searchedValue}`,
+                },
+            },
+        },
+    });
+}
+
 export function searchQuery(propName, searchedValue) {
     return createQuery({ [propName]: searchedValue });
 }
 
 export function createQuery(query) {
     return encodeURIComponent(JSON.stringify(query));
+}
+
+export async function getMovies(skip = 1) {
+    return get(endpoints.GET_MOVIES((skip - 1) * 4));
 }
