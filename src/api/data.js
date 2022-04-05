@@ -68,3 +68,7 @@ export function createQuery(query) {
 export async function getMovies(skip = 1) {
     return get(endpoints.GET_MOVIES((skip - 1) * 4));
 }
+
+export async function getCount() {
+    return get('/classes/Movies?count');
+}

@@ -1,4 +1,4 @@
-import { getAllMovies, getMovies, searchMovie } from '../api/data.js';
+import { getAllMovies, getCount, getMovies, searchMovie } from '../api/data.js';
 import { html, until, nothing } from '../lib.js';
 import { getUserData } from '../util.js';
 
@@ -26,8 +26,7 @@ const catalogTemplate = (
     isAuthenticated,
     onSearch,
     page,
-    onNextPage,
-    onPrevious
+    pages
 ) => html`
     <section id="home-page">
         <div
@@ -83,28 +82,31 @@ const catalogTemplate = (
                 class="navbar-nav mx-auto"
             >
                 <ul class="pagination" style="justify-content: center;">
-                    <li class="page-item">
-                        <a
-                            class="page-link"
-                            href="/?page=0"
-                            aria-label="Previous"
-                            @click=${(e) => onPrevious(e, page - 1)}
-                        >
-                            <span aria-hidden="true">Previous</span>
-                            <span class="sr-only">Previous</span>
-                        </a>
-                    </li>
-                    <li class="page-item">
-                        <a
-                            class="page-link"
-                            href="/?page=2"
-                            aria-label="Next"
-                            @click=${(e) => onNextPage(e, page + 1)}
-                        >
-                            <span aria-hidden="true">Next</span>
-                            <span class="sr-only">Next</span>
-                        </a>
-                    </li>
+                    <p class="page-link">Pages: ${page} of ${pages}</p>
+                    ${page > 1
+                        ? html`<li class="page-item">
+                              <a
+                                  class="page-link"
+                                  href="/?page=${Math.max(page - 1, 1)}"
+                                  aria-label="Previous"
+                              >
+                                  <span aria-hidden="true">&lt; Previous</span>
+                                  <span class="sr-only">Previous</span>
+                              </a>
+                          </li>`
+                        : nothing}
+                    ${page < pages
+                        ? html`<li class="page-item">
+                              <a
+                                  class="page-link"
+                                  href="/?page=${page + 1}"
+                                  aria-label="Next"
+                              >
+                                  <span aria-hidden="true">Next &gt;</span>
+                                  <span class="sr-only">Next</span>
+                              </a>
+                          </li>`
+                        : nothing}
                 </ul>
             </nav>
         </div>
@@ -112,30 +114,23 @@ const catalogTemplate = (
 `;
 
 export function catalogPage(ctx) {
-    update(loadMovies());
+    const querystring = Object.fromEntries([
+        ...new URLSearchParams(ctx.querystring).entries(),
+    ]);
 
-    function update(movies, page = 1) {
+    if (querystring.hasOwnProperty('page')) {
+        const page = Math.max(Number(querystring.page), 1);
+        update(loadMovies(page), page);
+    } else {
+        update(loadMovies());
+    }
+
+    async function update(movies, page = 1) {
+        const allMovies = await getCount();
+        const pages = Math.ceil(allMovies.results.length / 4);
         ctx.render(
-            catalogTemplate(
-                movies,
-                getUserData(),
-                onSearch,
-                page,
-                onNextPage,
-                onPrevious
-            )
+            catalogTemplate(movies, getUserData(), onSearch, page, pages)
         );
-    }
-
-    function onNextPage(event, page) {
-        event.preventDefault();
-        update(loadMovies(page), page);
-    }
-
-    function onPrevious(event, page) {
-        event.preventDefault();
-        page = Math.max(page, 1);
-        update(loadMovies(page), page);
     }
 
     async function loadMovies(skip = 1) {
