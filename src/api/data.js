@@ -9,7 +9,7 @@ const endpoints = {
     SEARCH: (searchedProp) => `/classes/Movies?where=${search(searchedProp)}`,
     MY_PROFILE: (userId) =>
         `/classes/Movies?where=${searchQuery('ownerId', userId)}`,
-    DELETE_LIKE: `/classes/Likes/`,
+    DELETE_LIKE: '/classes/Likes/',
     GET_MOVIES: (skip) => `/classes/Movies?limit=4&skip=${skip}`,
 };
 
@@ -67,8 +67,4 @@ export function createQuery(query) {
 
 export async function getMovies(skip = 1) {
     return get(endpoints.GET_MOVIES((skip - 1) * 4));
-}
-
-export async function getCount() {
-    return get('/classes/Movies?count');
 }
