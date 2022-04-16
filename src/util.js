@@ -1,3 +1,5 @@
+import { html } from './lib.js';
+
 export function setUserData(data) {
     sessionStorage.setItem('user', JSON.stringify(data));
 }
@@ -17,3 +19,11 @@ export function getUserData() {
 export function clearUserData() {
     sessionStorage.removeItem('user');
 }
+
+export const spinner = () => html`
+    <div class="loader-wrapper text-center">
+        <div class="loader">
+            <div class="loader loader-inner"></div>
+        </div>
+    </div>
+`;

@@ -1,6 +1,6 @@
 import { editMovie } from '../api/data.js';
 import { html, until, nothing } from '../lib.js';
-import { getUserData } from '../util.js';
+import { getUserData, spinner } from '../util.js';
 
 const editFormTemplate = (movie, onSubmit) => html`
     <form
@@ -53,10 +53,7 @@ const editTemplate = (moviePromise, errorMsg) => html`
                   <span>${errorMsg}</span>
               </div>`
             : nothing}
-        ${until(
-            moviePromise,
-            html`<h2 class="text-center">Loading &hellip;</h2>`
-        )}
+        ${until(moviePromise, spinner())}
     </section>
 `;
 
