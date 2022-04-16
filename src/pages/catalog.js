@@ -1,6 +1,6 @@
 import { getAllMovies, getCount, getMovies, searchMovie } from '../api/data.js';
 import { html, until, nothing } from '../lib.js';
-import { getUserData } from '../util.js';
+import { getUserData, spinner } from '../util.js';
 
 const movieTemplate = (movie) => html`
     <div class="card mb-4">
@@ -74,7 +74,7 @@ const catalogTemplate = (
         <div class="mt-3">
             <div class="row d-flex d-wrap">
                 <div class="card-deck d-flex justify-content-center">
-                    ${until(moviesPromise, html`<h2>Loading &hellip;</h2>`)}
+                    ${until(moviesPromise, spinner())}
                 </div>
             </div>
             <nav
